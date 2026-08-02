@@ -1,0 +1,45 @@
+# Render blueprint to deploy both backend and frontend on Render
+# Replace <OWNER>/<REPO> with your GitHub repository and set correct branch.
+# After importing this file in Render, add the secret values in the Render dashboard.
+
+services:
+  - type: web
+    name: jobdekho-server
+    env: node
+    region: oregon
+    branch: main
+    autoDeploy: true
+    repo: https://github.com/<OWNER>/<REPO>
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: MONGO_URI
+        value: ""
+      - key: PORT
+        value: "5000"
+      - key: JWT_SECRET
+        value: ""
+      - key: JWT_EXPIRE
+        value: "7d"
+      - key: SESSION_SECRET
+        value: ""
+      - key: OPENAI_API_KEY
+        value: ""
+      - key: CLIENT_URL
+        value: "https://<YOUR_FRONTEND_URL>"
+      - key: GOOGLE_CLIENT_ID
+        value: ""
+      - key: GOOGLE_CLIENT_SECRET
+        value: ""
+
+  - type: static_site
+    name: jobdekho-client
+    region: oregon
+    branch: main
+    autoDeploy: true
+    repo: https://github.com/<OWNER>/<REPO>
+    buildCommand: cd client && npm install && npm run build
+    publishPath: client/dist
+    envVars:
+      - key: VITE_API_URL
+        value: "https://jobdekho-server.onrender.com"
