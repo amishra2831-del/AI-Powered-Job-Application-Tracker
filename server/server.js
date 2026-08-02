@@ -27,13 +27,15 @@ app.use(cookieParser());
 const allowedOrigins = [
   process.env.CLIENT_URL,
   'https://client-theta-amber-33.vercel.app',
+  'https://job-dekho-virid.vercel.app',
 ].filter(Boolean);
 
-// Vercel assigns every preview/production deployment of this project a new
-// URL like https://client-<hash>-amishra2831-dels-projects.vercel.app
-// A static allowlist breaks on every new deploy, so match that pattern too.
+// Vercel assigns every preview/production deployment a new URL like
+// https://<project>-<hash>-amishra2831-dels-projects.vercel.app
+// A static allowlist breaks on every new deploy, so match that pattern too,
+// covering both the "client" and "job-dekho" Vercel projects.
 const vercelPreviewPattern =
-  /^https:\/\/client(-[a-z0-9]+)*-amishra2831-dels-projects\.vercel\.app$/;
+  /^https:\/\/(client|job-dekho)(-[a-z0-9]+)*-amishra2831-dels-projects\.vercel\.app$/;
 
 const corsOptions = {
   origin: (origin, callback) => {
