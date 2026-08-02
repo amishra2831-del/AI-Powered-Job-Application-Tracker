@@ -26,9 +26,14 @@ app.use(cookieParser());
 // in development allow the request origin for localhost testing.
 const allowedOrigins = [
   process.env.CLIENT_URL,
-  'https://client-90aqg8sfc-amishra2831-dels-projects.vercel.app',
   'https://client-theta-amber-33.vercel.app',
 ].filter(Boolean);
+
+// Vercel assigns every preview/production deployment of this project a new
+// URL like https://client-<hash>-amishra2831-dels-projects.vercel.app
+// A static allowlist breaks on every new deploy, so match that pattern too.
+const vercelPreviewPattern =
+  /^https:\/\/client(-[a-z0-9]+)*-amishra2831-dels-projects\.vercel\.app$/;
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -37,7 +42,7 @@ const corsOptions = {
       return callback(null, true);
     }
     if (process.env.NODE_ENV === 'production') {
-      if (allowedOrigins.includes(origin)) {
+      if (allowedOrigins.includes(origin) || vercelPreviewPattern.test(origin)) {
         return callback(null, true);
       }
       return callback(new Error(`CORS policy does not allow origin ${origin}`));
