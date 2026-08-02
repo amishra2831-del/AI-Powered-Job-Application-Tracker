@@ -41,7 +41,7 @@ Current Version: 1.0
 
 **Deployed On**
 - Frontend: Vercel
-- Backend: Render
+- Backend: Railway
 - Database: MongoDB Atlas
 
 ## Authentication
