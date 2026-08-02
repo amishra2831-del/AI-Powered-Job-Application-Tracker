@@ -116,7 +116,3 @@ applystaq/
     ├── models/      # Mongoose schemas
     └── routes/      # API routes
 ```
-
-## Author
-
-[S-undas](https://github.com/S-undas)
