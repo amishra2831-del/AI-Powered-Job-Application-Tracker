@@ -20,23 +20,34 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-// CORS: in production allow the configured client URL, in development allow the frontend origin dynamically
-if (process.env.NODE_ENV === 'production') {
-  app.use(
-    cors({
-      origin: process.env.CLIENT_URL,
-      credentials: true,
-    }),
-  );
-} else {
-  app.use(
-    cors({
-      origin: true, // reflect request origin
-      credentials: true,
-    }),
-  );
-}
+// CORS: in production allow the configured client URL plus any authorized frontends;
+// in development allow the request origin for localhost testing.
+const allowedOrigins = [
+  process.env.CLIENT_URL,
+  'https://client-90aqg8sfc-amishra2831-dels-projects.vercel.app',
+  'https://client-theta-amber-33.vercel.app',
+].filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) {
+      // Allow server-to-server requests or tools without origin header.
+      return callback(null, true);
+    }
+    if (process.env.NODE_ENV === 'production') {
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error(`CORS policy does not allow origin ${origin}`));
+    }
+    return callback(null, true);
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Session needed for Passport
 app.use(
@@ -47,6 +58,18 @@ app.use(
     cookie: { secure: process.env.NODE_ENV === "production" },
   }),
 );
+
+// Error handler for invalid JSON payloads
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+    console.error('Invalid JSON payload received:', err.message);
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid JSON payload',
+    });
+  }
+  next(err);
+});
 
 app.use(passport.initialize());
 app.use(passport.session());

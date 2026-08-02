@@ -4,6 +4,15 @@ import dotenv from "dotenv";
 import User from "../models/User.js";
 
 dotenv.config();
+const googleCallbackURL =
+  process.env.GOOGLE_CALLBACK_URL ||
+  "http://localhost:5000/api/auth/google/callback";
+if (process.env.NODE_ENV === 'production' && !process.env.GOOGLE_CALLBACK_URL) {
+  // eslint-disable-next-line no-console
+  console.warn(
+    'GOOGLE_CALLBACK_URL is not set in production. Google OAuth callback may fail.',
+  );
+}
 // Initialize Google OAuth strategy only when credentials are provided
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(
@@ -11,9 +20,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.NODE_ENV === 'production'
-          ? 'https://jobdekho.onrender.com/api/auth/google/callback'
-          : 'http://localhost:5000/api/auth/google/callback',
+        callbackURL: googleCallbackURL,
       },
       async (accessToken, refreshToken, profile, done) => {
         try {

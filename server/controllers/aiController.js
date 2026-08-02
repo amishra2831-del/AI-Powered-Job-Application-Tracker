@@ -9,9 +9,17 @@ const require = createRequire(import.meta.url);
 
 const pdfParse = require("pdf-parse");
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const getOpenAIClient = () => {
+  const apiKey = process.env.OPENAI_API_KEY?.trim();
+  if (!apiKey) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      'OPENAI_API_KEY is not configured. AI endpoints will be unavailable.',
+    );
+    return null;
+  }
+  return new OpenAI({ apiKey });
+};
 
 // Multer config — store file in memory temporarily
 export const upload = multer({
@@ -73,6 +81,14 @@ export const uploadResume = async (req, res) => {
 // @route   POST /api/ai/parse-job
 export const parseJob = async (req, res) => {
   try {
+    const openai = getOpenAIClient();
+    if (!openai) {
+      return res.status(500).json({
+        success: false,
+        message: "OpenAI API key is not configured",
+      });
+    }
+
     const { description } = req.body;
 
     if (!description || description.trim().length < 20) {
@@ -126,6 +142,14 @@ export const parseJob = async (req, res) => {
 // @route   POST /api/ai/match-score
 export const getMatchScore = async (req, res) => {
   try {
+    const openai = getOpenAIClient();
+    if (!openai) {
+      return res.status(500).json({
+        success: false,
+        message: "OpenAI API key is not configured",
+      });
+    }
+
     const { applicationId } = req.body;
 
     // Get user's resume
