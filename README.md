@@ -2,7 +2,7 @@
 
 A smart job application tracker built with the MERN stack, featuring AI-powered job parsing and resume matching via the OpenAI Chat API.
 
-🔗 **Live Demo:** [jobdekho.vercel.app]https://job-dekho-virid.vercel.app/
+🔗 **Live Demo:** [jobdekho.vercel.app]https://ai-powered-job-application-tracker-drab.vercel.app/
 
 
 ## Overview
